@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="ExceptionHandling" Id="{6144b9ce-50bd-48d4-aa03-b6d39b8bbd11}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ExceptionHandling EXTENDS System IMPLEMENTS I_ExceptionHandling
+
+VAR_OUTPUT
+END_VAR
+VAR
+	{attribute 'hide'} 
+	uiExceptionCounter : UINT := 0;
+	uiPresentExceptions : UINT := 0;
+	aExceptions : ARRAY[1..cMaxNumExceptions] OF ST_Exception;
+	
+	
+	
+END_VAR
+
+VAR CONSTANT
+	cMaxNumExceptions : UINT := 200;
+	aEmptyExceptions : ARRAY[1..cMaxNumExceptions] OF ST_Exception;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+aExceptions := aEmptyExceptions;
+
+uiExceptionCounter := 0;
+uiPresentExceptions := 0;]]></ST>
+    </Implementation>
+    <Method Name="BuildException" Id="{8efa5d74-d86d-4609-9105-696c907c4c69}">
+      <Declaration><![CDATA[
+METHOD BuildException : ST_Exception
+VAR_INPUT
+	eException	: E_Exception;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[BuildException.eException := eException;
+BuildException.eExceptionOrigin := getExceptionOrigin;
+BuildException.sTimestamp := SYSTEMTIME_TO_STRING(fbTime.systemTime);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Catch" Id="{f9c63e61-7c30-4248-abfe-75c8e7452dd9}">
+      <Declaration><![CDATA[
+METHOD Catch : BOOL
+VAR_INPUT
+	eException : E_Exception;
+	eExceptionOrigin : E_Origin;
+END_VAR
+
+VAR
+
+	i,k : UINT;
+	stEmptyException : ST_Exception;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF ExceptionAvailable()
+THEN
+	
+	FOR i:= 1 TO uiExceptionCounter 
+	DO
+		//Search for exception
+		IF aExceptions[i].eException = eException 
+		AND_THEN aExceptions[i].eExceptionOrigin = eExceptionOrigin
+		THEN
+			//If found delete it from the array and adjust it
+			Catch := TRUE;
+			FOR k:= i TO uiExceptionCounter-1
+			DO
+				aExceptions[k] := aExceptions[k+1];
+			END_FOR
+			aExceptions[k+1] := stEmptyException;
+			uiExceptionCounter := uiExceptionCounter - 1;
+		END_IF  
+	END_FOR
+
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExceptionAvailable" Id="{b6619a72-f620-402d-8fc9-3f6300ec9a52}">
+      <Declaration><![CDATA[METHOD ExceptionAvailable : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ExceptionAvailable := uiExceptionCounter > 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ForwardToNextLevel" Id="{8630296e-c096-4a32-a199-6651c4c66622}">
+      <Declaration><![CDATA[METHOD ForwardToNextLevel : BOOL
+VAR_INPUT
+	sender	: I_ExceptionHandling;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[WHILE sender.ExceptionAvailable()
+DO
+
+	//Report to next level
+	Throw(sender.getException);
+	
+END_WHILE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GenericCatch" Id="{8ce9b354-b72c-40fe-98ca-2e710962057e}">
+      <Declaration><![CDATA[METHOD GenericCatch : BOOL
+VAR_INPUT
+	eException	: E_Exception;
+END_VAR
+VAR
+	i,k : UINT;
+	stEmptyException : ST_Exception;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF ExceptionAvailable()
+THEN
+	
+	FOR i:= 1 TO uiExceptionCounter 
+	DO
+		//Search for exception
+		IF aExceptions[i].eException = eException 
+		THEN
+			//If found delete it from the array and adjust it
+			GenericCatch := TRUE;
+			FOR k:= i TO uiExceptionCounter-1
+			DO
+				aExceptions[k] := aExceptions[k+1];
+			END_FOR
+			aExceptions[k+1] := stEmptyException;
+			uiExceptionCounter := uiExceptionCounter - 1;
+		END_IF  
+	END_FOR
+
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="getException" Id="{be4c3491-9c15-48db-b0ce-03e8b0144da3}">
+      <Declaration><![CDATA[PROPERTY getException : ST_Exception
+]]></Declaration>
+      <Get Name="Get" Id="{de30387b-0ad7-4f37-ac88-b30cb2da078b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF ExceptionAvailable()
+THEN
+	getException := aExceptions[uiExceptionCounter];
+	uiExceptionCounter := uiExceptionCounter - 1;
+END_IF]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="getExceptionOrigin" Id="{a314e47e-e18b-43e5-9b3f-13b39d10e3bc}">
+      <Declaration><![CDATA[PROPERTY getExceptionOrigin : E_Origin
+]]></Declaration>
+      <Get Name="Get" Id="{ffd1d67d-ce26-452d-ae0e-5b04e35218bf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[getExceptionOrigin := eOrigin;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Throw" Id="{6b6b8137-7798-4b20-b9a8-8c0ae3240d29}">
+      <Declaration><![CDATA[METHOD Throw : BOOL
+VAR_INPUT
+	stException	: ST_Exception;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF uiExceptionCounter <= cMaxNumExceptions
+THEN
+	uiExceptionCounter := uiExceptionCounter + 1;
+	aExceptions[uiExceptionCounter] := stException;
+	Throw := TRUE;
+ELSE
+	Throw := FALSE;
+END_IF
+
+uiPresentExceptions := uiExceptionCounter;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ExceptionHandling">
+      <LineId Id="31" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.BuildException">
+      <LineId Id="7" Count="2" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.Catch">
+      <LineId Id="4" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="25" Count="5" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.ExceptionAvailable">
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.ForwardToNextLevel">
+      <LineId Id="8" Count="5" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.GenericCatch">
+      <LineId Id="8" Count="6" />
+      <LineId Id="16" Count="11" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.getException.Get">
+      <LineId Id="2" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="1" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.getExceptionOrigin.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ExceptionHandling.Throw">
+      <LineId Id="9" Count="1" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="16" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

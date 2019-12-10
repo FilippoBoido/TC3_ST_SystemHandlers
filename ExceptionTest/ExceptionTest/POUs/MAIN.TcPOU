@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="MAIN" Id="{1169b5ad-787b-4637-95d4-2ca0401351eb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	fbHigherLevel : HigherLevelFB;
+	eException : E_Exception;
+	stException : ST_Exception;
+	
+	bSystemException : BOOL;
+	bLowPressureException : BOOL;
+	bTestUnitWaitingForRelease : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbHigherLevel(eOrigin := eHIGHER_LEVEL);
+
+IF fbHigherLevel.Receive(eWAIT_FOR_RELEASE_SIGNAL, eTEST_UNIT) 
+THEN
+	bTestUnitWaitingForRelease := TRUE;
+END_IF
+
+WHILE fbHigherLevel.ExceptionAvailable()
+DO
+
+	stException := fbHigherLevel.getException;
+	
+	CASE stException.eException OF
+	
+		eSYSTEM_EXCEPTION:
+			//Stop machine operation for example
+			bSystemException := TRUE;
+			;
+		eLOW_PRESSURE_EXCEPTION:
+			bLowPressureException := TRUE;
+			;
+			
+	END_CASE
+	
+END_WHILE
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="30" Count="0" />
+      <LineId Id="68" Count="2" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="34" Count="2" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="49" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="Try" Id="{a5df9670-c639-45b0-bb9d-6f1c178d5eb4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION Try : BOOL
+VAR_INPUT
+	iExceptionHandling : I_ExceptionHandling;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="Try">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

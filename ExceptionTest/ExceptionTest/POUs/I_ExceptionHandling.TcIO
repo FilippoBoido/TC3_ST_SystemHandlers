@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <Itf Name="I_ExceptionHandling" Id="{d05c4919-1dbf-49ef-81be-1eb3c31fdd6c}">
+    <Declaration><![CDATA[INTERFACE I_ExceptionHandling
+]]></Declaration>
+    <Method Name="BuildException" Id="{1b1d43bd-261c-4d6b-bccf-fae29ab4e826}">
+      <Declaration><![CDATA[METHOD BuildException : ST_Exception
+VAR_INPUT
+	eException : E_Exception;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Catch" Id="{547f77b8-3bae-446f-a966-eaa2371e4ff2}">
+      <Declaration><![CDATA[METHOD Catch : BOOL
+VAR_INPUT
+	eException : E_Exception;
+	eExceptionOrigin : E_Origin;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="ExceptionAvailable" Id="{5ebfad5f-abc0-4515-aeb4-06e73d73a23b}">
+      <Declaration><![CDATA[METHOD ExceptionAvailable : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="ForwardToNextLevel" Id="{7b5e33b6-5025-4e95-9822-b466a812f28e}">
+      <Declaration><![CDATA[METHOD ForwardToNextLevel : BOOL
+VAR_INPUT
+	sender : I_ExceptionHandling;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GenericCatch" Id="{6546e87b-6ce2-4c7e-b984-19a451fd56f3}">
+      <Declaration><![CDATA[METHOD GenericCatch : BOOL
+VAR_INPUT
+	eException : E_Exception;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="getException" Id="{7185c56b-9383-443e-9d5b-6f3e5687528c}">
+      <Declaration><![CDATA[PROPERTY getException : ST_Exception]]></Declaration>
+      <Get Name="Get" Id="{417c9224-cbcb-4676-84b6-0cc373878cc9}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="getExceptionOrigin" Id="{ea4e7814-b1ed-457d-8fb2-a18aa4a80c13}">
+      <Declaration><![CDATA[PROPERTY getExceptionOrigin : E_Origin]]></Declaration>
+      <Get Name="Get" Id="{49294241-bf64-4e7a-8649-e823e91b4e7f}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="Throw" Id="{b48f5560-29b3-4065-8aa9-a96e5d54929b}">
+      <Declaration><![CDATA[METHOD Throw : BOOL
+VAR_INPUT
+	stException : ST_Exception;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <DUT Name="ST_Exception" Id="{1ffc0f74-3281-4f1c-a963-af04564bdf2d}">
+    <Declaration><![CDATA[TYPE ST_Exception :
+STRUCT
+	eException : E_Exception;
+	eExceptionOrigin : E_Origin;
+	sTimestamp : STRING;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

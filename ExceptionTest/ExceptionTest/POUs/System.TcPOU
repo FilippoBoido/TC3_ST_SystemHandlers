@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="System" Id="{602cf87f-f724-402c-a908-37c85e996734}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK System
+VAR_INPUT CONSTANT
+	eOrigin : E_Origin;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	fbTime : FB_LocalSystemTime := ( bEnable := TRUE, dwCycle := 1 );
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbTime();]]></ST>
+    </Implementation>
+    <LineIds Name="System">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

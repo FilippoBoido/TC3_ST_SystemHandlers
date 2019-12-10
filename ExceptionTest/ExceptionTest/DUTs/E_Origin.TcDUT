@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <DUT Name="E_Origin" Id="{4ca9aee7-2676-4cea-bdf1-44a226daedd6}">
+    <Declaration><![CDATA[ TYPE E_Origin :
+(
+	eNO_ORIGIN := 0,
+	eTEST_UNIT := 100,
+	eHIGHER_LEVEL := 110
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

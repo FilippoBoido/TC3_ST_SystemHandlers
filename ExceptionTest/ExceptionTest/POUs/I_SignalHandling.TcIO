@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <Itf Name="I_SignalHandling" Id="{722a65b6-464f-4fbf-a750-56f3314823ba}">
+    <Declaration><![CDATA[INTERFACE I_SignalHandling
+]]></Declaration>
+    <Method Name="BuildSignal" Id="{33a22f54-49cb-472f-a974-18d053e92171}">
+      <Declaration><![CDATA[METHOD BuildSignal : ST_Signal
+VAR_INPUT
+	eSignal	: E_Signal;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GenericReceive" Id="{e3082482-868e-4e97-82aa-e6e8309b155b}">
+      <Declaration><![CDATA[METHOD GenericReceive : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="getSignal" Id="{f5c45975-da8b-449d-8570-cf3ec81259bf}">
+      <Declaration><![CDATA[PROPERTY getSignal : ST_Signal]]></Declaration>
+      <Get Name="Get" Id="{8b0e9c41-5f27-402e-92bd-9fe90333feab}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="getSignalOrigin" Id="{1ef738a6-05a6-4e72-bd7a-fc777537a3c4}">
+      <Declaration><![CDATA[PROPERTY getSignalOrigin : E_Origin]]></Declaration>
+      <Get Name="Get" Id="{29bcce1f-f953-440a-8a05-78fd4f7b0260}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="GlobalReset" Id="{21e98d47-dcd8-4290-9f78-f6060bc68a95}">
+      <Declaration><![CDATA[METHOD GlobalReset 
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Receive" Id="{059b0042-9096-44c1-9b92-dc16887c27ee}">
+      <Declaration><![CDATA[METHOD Receive : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+	eSignalOrigin : E_Origin;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="ResetSignal" Id="{ccea8a91-62d7-4493-9a0a-5a00360cd0ce}">
+      <Declaration><![CDATA[METHOD ResetSignal : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+	eSignalOrigin : E_Origin;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="Signal" Id="{164a721d-6a00-4434-ab87-0692cba2a478}">
+      <Declaration><![CDATA[METHOD Signal : BOOL
+VAR_INPUT
+	stSignal	: ST_Signal;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="SignalAvailable" Id="{1576c7ba-0127-42b8-aecf-634dd8d6a0f2}">
+      <Declaration><![CDATA[METHOD SignalAvailable : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

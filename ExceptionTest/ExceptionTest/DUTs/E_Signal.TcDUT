@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <DUT Name="E_Signal" Id="{4daaa4cd-ae5a-4845-8f28-2f41eaf8cfad}">
+    <Declaration><![CDATA[TYPE E_Signal :
+(
+	eNO_SIGNAL := 0,
+	eWAIT_FOR_RELEASE_SIGNAL := 100
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

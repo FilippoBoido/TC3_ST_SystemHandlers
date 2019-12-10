@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <DUT Name="E_Exception" Id="{23982ef5-929e-413d-901a-d2dc04581372}">
+    <Declaration><![CDATA[
+TYPE E_Exception :
+(
+	eNO_EXCEPTION := 0,
+	eWRONG_VALUE_EXCEPTION := 100,
+	eLOW_PRESSURE_EXCEPTION := 110,
+	eSYSTEM_EXCEPTION := 10000
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

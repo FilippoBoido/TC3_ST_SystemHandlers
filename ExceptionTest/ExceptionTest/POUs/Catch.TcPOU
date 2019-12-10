@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="Catch" Id="{e9ec72b0-ed33-4e0f-91b3-eb9100cce2a8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION Catch : BOOL
+VAR_INPUT
+	eException : E_Exception;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="Catch">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

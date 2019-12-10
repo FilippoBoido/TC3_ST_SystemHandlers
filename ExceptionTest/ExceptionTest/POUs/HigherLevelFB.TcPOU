@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="HigherLevelFB" Id="{b72c46aa-1dd1-419c-8ff8-f3de5d8c59b9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK HigherLevelFB EXTENDS SignalHandling
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	fbTest : TESTFB;
+	stException : ST_Exception;
+	bSystemException : BOOL;
+	bWrongValueException : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+fbTest(eOrigin := eTEST_UNIT);
+
+IF fbTest.Catch(eWRONG_VALUE_EXCEPTION, fbTest.getExceptionOrigin) 
+THEN
+	;
+// React to error here
+// Catch must reset the exception in fbTest
+	bWrongValueException := TRUE;	
+END_IF
+
+//Forward all other exceptions to the next higher level
+IF fbTest.ExceptionAvailable()
+THEN
+
+	//ForwardToNextLevel must set all exceptions in fbTest on forwarded
+	ForwardToNextLevel(fbTest);
+	
+END_IF
+
+IF bSystemException
+THEN
+	Throw(BuildException(eSYSTEM_EXCEPTION));
+END_IF
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="HigherLevelFB">
+      <LineId Id="51" Count="2" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="59" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

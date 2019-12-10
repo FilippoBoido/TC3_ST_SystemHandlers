@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <DUT Name="ST_Signal" Id="{7807512c-de8e-4cd0-89b2-18d6bfa8ee2e}">
+    <Declaration><![CDATA[TYPE ST_Signal :
+STRUCT
+	eSignal : E_Signal;
+	eSignalOrigin : E_Origin;
+	sTimestamp : STRING;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

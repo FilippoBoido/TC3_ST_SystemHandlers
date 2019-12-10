@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="SignalHandling" Id="{2ab09956-4cc3-4975-9dc3-0010378d9e03}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+Signals are sent only once.
+In order to resend the same signal, a global or a local reset is necessary.
+*)
+FUNCTION_BLOCK SignalHandling EXTENDS ExceptionHandling IMPLEMENTS I_SignalHandling 
+VAR_OUTPUT
+END_VAR
+
+VAR_STAT
+	bResetSignals : BOOL;
+	aSignals : ARRAY[1..cMaxNumSignals] OF ST_Signal;
+	uiSignalCounter : UINT := 0;
+END_VAR
+
+VAR CONSTANT
+	cMaxNumSignals : UINT := 200;
+	aEmptySignals : ARRAY[1..cMaxNumSignals] OF ST_Signal;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="BuildSignal" Id="{996c1d09-304f-429e-9c0a-344ab9aac518}">
+      <Declaration><![CDATA[METHOD BuildSignal : ST_Signal
+VAR_INPUT
+	eSignal	: E_Signal;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[BuildSignal.eSignal := eSignal;
+BuildSignal.eSignalOrigin := getSignalOrigin;
+BuildSignal.sTimestamp := SYSTEMTIME_TO_STRING(fbTime.systemTime);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GenericReceive" Id="{cd45dc76-7fdf-4b42-ae86-f98cde4d6aee}">
+      <Declaration><![CDATA[METHOD GenericReceive : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+END_VAR
+VAR
+	i : UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 1 TO uiSignalCounter
+DO
+
+	IF aSignals[i].eSignal = eSignal
+	THEN
+		//Reset the signal now
+		GenericReceive := TRUE;
+		RETURN;
+	END_IF
+		
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="getSignal" Id="{645eaa58-74c1-4972-8cc3-7d57aeead74c}">
+      <Declaration><![CDATA[{warning 'Eigenschaftenimplementierung hinzufügen'}
+PROPERTY getSignal : ST_Signal
+]]></Declaration>
+      <Get Name="Get" Id="{f990f5e6-985b-433a-8c56-c1dbdd717da5}">
+        <Declaration><![CDATA[VAR CONSTANT
+	stEmptySignal : ST_Signal;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF SignalAvailable()
+THEN
+	getSignal := aSignals[uiSignalCounter];
+	aSignals[uiSignalCounter] := stEmptySignal;
+	uiSignalCounter := uiSignalCounter - 1;
+END_IF]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="getSignalOrigin" Id="{2b76968e-adac-4046-8344-c15ca7f5eee9}">
+      <Declaration><![CDATA[PROPERTY getSignalOrigin : E_Origin
+]]></Declaration>
+      <Get Name="Get" Id="{539bb983-ad21-4398-8d00-b693f24fbb3e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[getSignalOrigin := eOrigin;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="GlobalReset" Id="{24c0c733-846f-4865-94aa-11be04cabf5c}">
+      <Declaration><![CDATA[METHOD GlobalReset 
+VAR
+	stEmptySignal : ST_Signal;
+	i : UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[aSignals := aEmptySignals;
+uiSignalCounter := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Receive" Id="{beb99fe9-0fbb-4492-93b6-031e70c74753}">
+      <Declaration><![CDATA[METHOD Receive : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+	eSignalOrigin : E_Origin;
+END_VAR
+VAR
+	i : UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 1 TO uiSignalCounter
+DO
+
+	IF aSignals[i].eSignal = eSignal
+	AND_THEN aSignals[i].eSignalOrigin = eSignalOrigin
+	THEN
+		//Reset the signal now
+		Receive := TRUE;
+		RETURN;
+	END_IF
+		
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetSignal" Id="{14b95dca-d717-48d8-b998-d6f2c04e85fa}">
+      <Declaration><![CDATA[METHOD ResetSignal : BOOL
+VAR_INPUT
+	eSignal : E_Signal;
+	eSignalOrigin : E_Origin;
+END_VAR
+VAR
+	i , k: UINT;
+	stEmptySignal : ST_Signal;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF SignalAvailable()
+THEN
+	
+	FOR i:= 1 TO uiSignalCounter 
+	DO
+		//Search for exception
+		IF aSignals[i].eSignal = eSignal 
+		AND_THEN aSignals[i].eSignalOrigin = eSignalOrigin
+		THEN
+			//If found delete it from the array and adjust it
+			ResetSignal := TRUE;
+			FOR k:= i TO uiSignalCounter-1
+			DO
+				aSignals[k] := aSignals[k+1];
+			END_FOR
+			aSignals[k+1] := stEmptySignal;
+			uiSignalCounter := uiSignalCounter - 1;
+		END_IF  
+	END_FOR
+
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Signal" Id="{1c8c2b8a-bf66-4183-925b-41180ac1de40}">
+      <Declaration><![CDATA[METHOD Signal : BOOL
+VAR_INPUT
+	stSignal	: ST_Signal;
+END_VAR
+VAR
+	i : UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF uiSignalCounter <= cMaxNumSignals
+THEN
+	//Check if signal has been already sent
+	FOR i := 1 TO uiSignalCounter
+	DO
+	
+		IF aSignals[i].eSignal = stSignal.eSignal
+		AND_THEN aSignals[i].eSignalOrigin = stSignal.eSignalOrigin
+		THEN
+			RETURN;
+		END_IF
+			
+	END_FOR
+	
+	uiSignalCounter := uiSignalCounter + 1;
+	aSignals[uiSignalCounter] := stSignal;
+	Signal := TRUE;
+	
+ELSE
+
+	Signal := FALSE;
+	
+END_IF
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SignalAvailable" Id="{518ea478-6e53-4f65-83ff-d325740067c3}">
+      <Declaration><![CDATA[METHOD SignalAvailable : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SignalAvailable := uiSignalCounter > 0;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SignalHandling">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.BuildSignal">
+      <LineId Id="8" Count="1" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.GenericReceive">
+      <LineId Id="6" Count="3" />
+      <LineId Id="11" Count="5" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.getSignal.Get">
+      <LineId Id="5" Count="3" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.getSignalOrigin.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.GlobalReset">
+      <LineId Id="20" Count="1" />
+    </LineIds>
+    <LineIds Name="SignalHandling.Receive">
+      <LineId Id="6" Count="10" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.ResetSignal">
+      <LineId Id="26" Count="19" />
+      <LineId Id="24" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.Signal">
+      <LineId Id="6" Count="1" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="25" Count="5" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="8" Count="2" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="SignalHandling.SignalAvailable">
+      <LineId Id="4" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
